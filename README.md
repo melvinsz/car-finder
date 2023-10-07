@@ -1,12 +1,4 @@
-# Getting Started with Create React App
-
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
-
-## Available Scripts
-
-In the project directory, you can run:
-
-### `npm start`
+`npm start`
 
 Runs the app in the development mode.\
 Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
@@ -14,57 +6,88 @@ Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
 The page will reload when you make changes.\
 You may also see any lint errors in the console.
 
-### `npm test`
+що встановити
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+npm i react-redux
+npm i @reduxjs/toolkit
+npm i redux-persist
+npm i axios
+npm i notiflix
 
-### `npm run build`
+1. Старт нового проекту:
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+в консолі
+$ npx create-react-app project_name
+cd project_name
+npm install gh-pages --save-dev
+в проекті
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+відкрити package.json і дописати homepage
+"homepage": "https://melvinsz.github.io/project_name",
+"name": "project_name",
+додати в scripts
+"scripts": {
+"predeploy": "npm run build",
+"deploy": "gh-pages -d build",
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+через github desktop закидуємо на github
 
-### `npm run eject`
+2.  створити в src папку components де будемо зберігати всі файли
+    якщо маємо якийсь бек і нам потрібен стор то створюємо папку redux, в ній
 
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
+    2.1 selectors.js - щоб було легше звертатись до елеметів стейту, наприклад export const selectContactsList = state => state.contacts.contacts.items;
 
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+    2.2 operations.js - описуємо всі операції наших запитів:
+    2.2.1 fetchAll
+    export const fetchAll = createAsyncThunk(
+    'contacts/fetchAll',
+    async (\_, thunkAPI) => {
+    try {
+    const response = await axios.get('/contacts');
+    return { items: response.data };
+    } catch (e) {
+    return thunkAPI.rejectWithValue(e.message);
+    }
+    }
+    2.2.2 add
+    export const addContact = createAsyncThunk(
+    'contacts/addContact',
+    async ({ name, number }, thunkAPI) => {
+    try {
+    const response = await axios.post('/contacts', { name, phone: number });
+    return response.data;
+    } catch (e) {
+    return thunkAPI.rejectWithValue(e.message);
+    }
+    }
+    );
+    2.2.3 delete
+    export const deleteContact = createAsyncThunk(
+    'contacts/deleteTask',
+    async (contactId, thunkAPI) => {
+    try {
+    const response = await axios.delete(`/contacts/${contactId}`);
+    return response.data;
+    } catch (e) {
+    return thunkAPI.rejectWithValue(e.message);
+    }
+    }
+    );
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
+    2.3 slice.js - створюємо слайс де описуємо стейт початковий, та що має в ньому змінюватись при відповідних операціях
+    const initialState = {
+    contacts: {
+    items: [],
+    isLoading: false,
+    error: null,
+    },
+    filter: '',
+    };
 
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
+    .addCase(fetchAll.fulfilled, (state, action) => {
+    state.contacts.isLoading = false;
+    state.contacts.error = null;
+    state.contacts.items = action.payload.items;
+    })
 
-## Learn More
-
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
-
-To learn React, check out the [React documentation](https://reactjs.org/).
-
-### Code Splitting
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
-
-### Analyzing the Bundle Size
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
-
-### Making a Progressive Web App
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
-
-### Advanced Configuration
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
-
-### Deployment
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
-
-### `npm run build` fails to minify
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+    2.4 store.js - налаштовуємо стор відповідним редюсером
