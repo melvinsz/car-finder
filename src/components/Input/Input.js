@@ -1,5 +1,5 @@
 const Input = ({ children, ...other }) => {
-  const { label, onChange, value, type, name, pattern, title, required = false } = other;
+  const { label, onChange, value, type, name, pattern, title, required = false, placeholder } = other;
 
   return (
     <p>
@@ -13,6 +13,7 @@ const Input = ({ children, ...other }) => {
           pattern={pattern}
           title={title}
           required={required}
+          placeholder={placeholder}
         />
         {children}
       </label>

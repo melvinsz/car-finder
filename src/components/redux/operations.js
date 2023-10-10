@@ -11,21 +11,3 @@ export const fetchAll = createAsyncThunk("advert/fetchAll", async (_, thunkAPI) 
     return thunkAPI.rejectWithValue(e.message);
   }
 });
-
-export const addContact = createAsyncThunk("advert/addContact", async ({ name, number }, thunkAPI) => {
-  try {
-    const response = await axios.post("/advert", { name, phone: number });
-    return response.data;
-  } catch (e) {
-    return thunkAPI.rejectWithValue(e.message);
-  }
-});
-
-export const deleteContact = createAsyncThunk("advert/deleteTask", async (contactId, thunkAPI) => {
-  try {
-    const response = await axios.delete(`/advert/${contactId}`);
-    return response.data;
-  } catch (e) {
-    return thunkAPI.rejectWithValue(e.message);
-  }
-});

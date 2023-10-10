@@ -11,6 +11,7 @@ You may also see any lint errors in the console.
 npm i react-redux
 npm i @reduxjs/toolkit
 npm i redux-persist
+npm i react-router-dom
 npm i axios
 npm i notiflix
 
@@ -32,13 +33,24 @@ npm install gh-pages --save-dev
 
 через github desktop закидуємо на github
 
-2.  створити в src папку components де будемо зберігати всі файли
-    якщо маємо якийсь бек і нам потрібен стор то створюємо папку redux, в ній
+2.Огортаємо в index.js наш App.js в Provider та BrowserRouter
+<React.StrictMode>
+<Provider store={store}>
+<BrowserRouter basename="car-finder">
+<App />
+</BrowserRouter>
+</Provider>
+</React.StrictMode>
 
-    2.1 selectors.js - щоб було легше звертатись до елеметів стейту, наприклад export const selectContactsList = state => state.contacts.contacts.items;
+3. В App.js створюємо нашу навігацію та створюємо роути
 
-    2.2 operations.js - описуємо всі операції наших запитів:
-    2.2.1 fetchAll
+. створити в src папку components де будемо зберігати всі файли
+якщо маємо якийсь бек і нам потрібен стор то створюємо папку redux, в ній
+
+    .1 selectors.js - щоб було легше звертатись до елеметів стейту, наприклад export const selectContactsList = state => state.contacts.contacts.items;
+
+    .2 operations.js - описуємо всі операції наших запитів:
+    .2.1 fetchAll
     export const fetchAll = createAsyncThunk(
     'contacts/fetchAll',
     async (\_, thunkAPI) => {
@@ -49,7 +61,7 @@ npm install gh-pages --save-dev
     return thunkAPI.rejectWithValue(e.message);
     }
     }
-    2.2.2 add
+    .2.2 add
     export const addContact = createAsyncThunk(
     'contacts/addContact',
     async ({ name, number }, thunkAPI) => {
@@ -61,7 +73,7 @@ npm install gh-pages --save-dev
     }
     }
     );
-    2.2.3 delete
+    .2.3 delete
     export const deleteContact = createAsyncThunk(
     'contacts/deleteTask',
     async (contactId, thunkAPI) => {
@@ -74,7 +86,7 @@ npm install gh-pages --save-dev
     }
     );
 
-    2.3 slice.js - створюємо слайс де описуємо стейт початковий, та що має в ньому змінюватись при відповідних операціях
+    .3 slice.js - створюємо слайс де описуємо стейт початковий, та що має в ньому змінюватись при відповідних операціях
     const initialState = {
     contacts: {
     items: [],
@@ -90,4 +102,4 @@ npm install gh-pages --save-dev
     state.contacts.items = action.payload.items;
     })
 
-    2.4 store.js - налаштовуємо стор відповідним редюсером
+    .4 store.js - налаштовуємо стор відповідним редюсером

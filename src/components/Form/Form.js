@@ -1,24 +1,21 @@
-import { useDispatch, useSelector } from "react-redux";
-import { addContact } from "../redux/operations";
+import { useSelector } from "react-redux";
+
 import Input from "../Input/Input";
 import Notiflix from "notiflix";
 import { selectCarsList } from "../redux/selectors";
 
 const Form = () => {
-  const dispatch = useDispatch();
   const cars = useSelector(selectCarsList);
 
   const handleSubmit = (event) => {
     event.preventDefault();
     const name = event.target.name.value;
-    const number = event.target.number.value;
     const hasName = cars.some((item) => item.name === name);
     if (hasName) {
       Notiflix.Notify.warning(`Car "${name}" already exists.`);
       return;
     }
 
-    dispatch(addContact({ name, number }));
     event.target.reset();
   };
 

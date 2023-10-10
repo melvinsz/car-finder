@@ -1,77 +1,65 @@
-import { useDispatch, useSelector } from "react-redux";
-import { filtercars } from "../redux/slice";
-import Input from "../Input/Input";
-import Notification from "../Notification/Notification";
-import { selectCarsList, selectFilterValue } from "../redux/selectors";
-import { useEffect } from "react";
-import { fetchAll, deleteContact } from "../redux/operations";
+import { useSelector } from "react-redux";
 
-const Contacts = () => {
-  const dispatch = useDispatch();
+import { selectCarsList } from "../redux/selectors";
+import CarFilter from "../CarFilter/CarFIlter";
+import { useState } from "react";
 
+const Cars = () => {
   const items = useSelector(selectCarsList);
-  const filterValue = useSelector(selectFilterValue);
 
-  useEffect(() => {
-    dispatch(fetchAll());
-  }, [dispatch]);
-
-  const handleDelete = (id) => {
-    dispatch(deleteContact(id));
+  const [filteredCars, setFilteredCars] = useState(items);
+  console.log("items", items);
+  console.log("filteredCars", filteredCars);
+  const handleFilterChange = (filters) => {
+    const filtered = items.filter((car) => {
+      const nameMatch = car.name.toLowerCase().includes(filters.name.toLowerCase());
+      const priceMatch = car.price <= filters.price || !filters.price;
+      const mileageMatch =
+        (car.mileage >= filters.minMileage || !filters.minMileage) &&
+        (car.mileage <= filters.maxMileage || !filters.maxMileage);
+      return nameMatch && priceMatch && mileageMatch;
+    });
+    setFilteredCars(filtered);
   };
-
-  const handleChange = (e) => {
-    const value = e.target.value;
-    dispatch(filtercars(value));
-  };
-
-  const filteredContacts = items.filter((item) => item.make && item.make.toLowerCase().includes(filterValue.toLowerCase()));
 
   return (
     <div>
-      <Input label="Car brand" value={filterValue} onChange={handleChange} type="text" name="filter" />
-      <button type="button">Search</button>
-      {!filteredContacts.length ? (
-        <Notification message="Contact list is empty." />
-      ) : (
-        <ul>
-          {filteredContacts.map(
-            ({
-              id,
-              year,
-              make,
-              model,
-              type,
-              img,
-              description,
-              fuelConsumption,
-              engineSize,
-              accessories,
-              functionalities,
-              rentalPrice,
-              rentalCompany,
-              address,
-              rentalConditions,
-              mileage,
-            }) => (
-              <li key={id}>
-                <img src={img} alt="car" width="400" />
-                <span>
-                  {make} {model} {year} {rentalPrice}
-                </span>
-                <span>
-                  {address} | {rentalCompany} | {type} | {model} | {id} | {functionalities}
-                </span>
-                <button type="button" onClick={() => handleDelete(id)}>
-                  Delete
-                </button>
-              </li>
-            )
-          )}
-        </ul>
-      )}
+      <CarFilter onFilterChange={handleFilterChange} />
+
+      <ul>
+        {filteredCars.map(
+          ({
+            id,
+            year,
+            make,
+            model,
+            type,
+            img,
+            description,
+            fuelConsumption,
+            engineSize,
+            accessories,
+            functionalities,
+            rentalPrice,
+            rentalCompany,
+            address,
+            rentalConditions,
+            mileage,
+          }) => (
+            <li key={id}>
+              <img src={img} alt="car" width="400" />
+              <span>
+                {make} {model} {year} {rentalPrice}
+              </span>
+              <span>
+                {address} | {rentalCompany} | {type} | {model} | {id} | {functionalities}
+              </span>
+            </li>
+          )
+        )}
+      </ul>
     </div>
   );
 };
 
-export default Contacts;
+export default Cars;
